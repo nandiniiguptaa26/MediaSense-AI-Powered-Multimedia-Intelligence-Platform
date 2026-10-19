@@ -1,0 +1,9 @@
+/Users/amitgupta/projects/MediaMind/qna-service/src/main/java/com/mediamind/qna/QnAServiceApplication.java
+/Users/amitgupta/projects/MediaMind/qna-service/src/main/java/com/mediamind/qna/controller/QnAController.java
+/Users/amitgupta/projects/MediaMind/qna-service/src/main/java/com/mediamind/qna/model/AskRequest.java
+/Users/amitgupta/projects/MediaMind/qna-service/src/main/java/com/mediamind/qna/model/AskResponse.java
+/Users/amitgupta/projects/MediaMind/qna-service/src/main/java/com/mediamind/qna/model/ContextChunk.java
+/Users/amitgupta/projects/MediaMind/qna-service/src/main/java/com/mediamind/qna/model/IngestResponse.java
+/Users/amitgupta/projects/MediaMind/qna-service/src/main/java/com/mediamind/qna/service/ContextStore.java
+/Users/amitgupta/projects/MediaMind/qna-service/src/main/java/com/mediamind/qna/service/IngestService.java
+/Users/amitgupta/projects/MediaMind/qna-service/src/main/java/com/mediamind/qna/service/QnAService.java

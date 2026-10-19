@@ -1,0 +1,9 @@
+com/mediamind/qna/service/ContextStore.class
+com/mediamind/qna/model/ContextChunk.class
+com/mediamind/qna/QnAServiceApplication.class
+com/mediamind/qna/controller/QnAController.class
+com/mediamind/qna/service/IngestService.class
+com/mediamind/qna/model/AskRequest.class
+com/mediamind/qna/model/AskResponse.class
+com/mediamind/qna/model/IngestResponse.class
+com/mediamind/qna/service/QnAService.class
