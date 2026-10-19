@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediaMind — Media Processing Platform</title>
+    <style>
+        /* ── Reset & Variables ─────────────────────────────────────────── */
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#0f1117;--bg2:#1a1d27;--bg3:#22263a;--bg4:#2a2f47;
+            --border:#2e3250;--border2:#3d4468;
+            --primary:#6c63ff;--primary-h:#5a52e0;--primary-l:rgba(108,99,255,.13);
+            --success:#22c55e;--error:#ef4444;--warn:#f59e0b;--info:#38bdf8;
+            --text:#e8eaf6;--muted:#7b82a8;--muted2:#4f5578;
+            --r:10px;--rs:6px;
+        }
+        html,body{height:100%;background:var(--bg);color:var(--text);
+            font:14px/1.6 'Segoe UI',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+        ::-webkit-scrollbar{width:5px;height:5px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+        code{font-family:Consolas,'Courier New',monospace;font-size:12px;
+            background:var(--bg3);padding:2px 7px;border-radius:4px;color:#a5b4fc}
+
+        /* ── Layout ────────────────────────────────────────────────────── */
+
+        .layout{display:flex;min-height:100vh}
+
+        .sidebar{width:230px;min-width:230px;background:var(--bg2);border-right:1px solid var(--border);
+
+            display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+
+        .main{flex:1;padding:32px;overflow-y:auto;min-width:0}
+
+
+
+        /* ── Sidebar ───────────────────────────────────────────────────── */
+
+        .sb-logo{padding:22px 20px 14px;border-bottom:1px solid var(--border)}
+
+        .sb-logo h1{font-size:19px;font-weight:700;color:var(--primary);letter-spacing:-.5px}
+
+        .sb-logo span{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+
+        .sb-nav{padding:10px 0;flex:1}
+
+        .sb-section{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
+
+            color:var(--muted2);padding:12px 20px 4px}
+
+        .sb-item{display:flex;align-items:center;gap:9px;padding:9px 20px;
+
+            color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;
+
+            border-left:3px solid transparent;transition:all .15s;user-select:none}
+
+        .sb-item:hover{background:var(--bg3);color:var(--text)}
+
+        .sb-item.active{color:var(--primary);background:var(--primary-l);border-left-color:var(--primary)}
+
+        .sb-icon{font-size:15px;width:20px;text-align:center}
+
+        .sb-ports{padding:14px 20px;border-top:1px solid var(--border)}
+
+        .sb-ports-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
+
+            color:var(--muted2);margin-bottom:8px}
+
+        .port-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+
+        .port-label{font-size:12px;color:var(--muted)}
+
+        .port-badge{font-size:11px;color:var(--muted);background:var(--bg3);
+
+            padding:1px 7px;border-radius:10px;font-family:Consolas,monospace}
+
+
+
+        /* ── Page header ───────────────────────────────────────────────── */
+
+        .ph{margin-bottom:24px}
+
+        .ph h2{font-size:21px;font-weight:700;margin-bottom:3px}
+
+        .ph p{color:var(--muted);font-size:13px}
+
+
+
+        /* ── Cards ─────────────────────────────────────────────────────── */
+
+        .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+
+            padding:22px;margin-bottom:18px}
+
+        .card-title{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+
+
+
+        /* ── Tabs ──────────────────────────────────────────────────────── */
+
+        .tabs{display:flex;gap:2px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0}
+
+        .tab{padding:8px 15px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;
+
+            border:none;background:none;font-family:inherit;border-bottom:2px solid transparent;
+
+            margin-bottom:-1px;transition:all .15s}
+
+        .tab:hover{color:var(--text)}
+
+        .tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+
+
+
+        /* ── Form ──────────────────────────────────────────────────────── */
+
+        .fr{margin-bottom:14px}
+
+        label.lbl{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px}
+
+        input[type=text],input[type=url],input[type=number],select,textarea{
+
+            width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);
+
+            color:var(--text);padding:8px 11px;font-size:13px;font-family:inherit;outline:none;
+
+            transition:border-color .15s}
+
+        input:focus,select:focus,textarea:focus{border-color:var(--primary)}
+
+        textarea{resize:vertical;min-height:75px}
+
+        select option{background:var(--bg3)}
+
+        .fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+        .fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+        .hint{font-size:11.5px;color:var(--muted);margin-top:4px}
+
+
+
+        /* ── Buttons ───────────────────────────────────────────────────── */
+
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+
+            padding:8px 17px;border-radius:var(--rs);font-size:13px;font-weight:600;
+
+            font-family:inherit;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+
+        .btn-p{background:var(--primary);color:#fff}.btn-p:hover:not(:disabled){background:var(--primary-h)}
+
+        .btn-o{background:transparent;color:var(--text);border:1px solid var(--border)}
+
+        .btn-o:hover:not(:disabled){background:var(--bg3);border-color:var(--primary);color:var(--primary)}
+
+        .btn-d{background:transparent;color:var(--error);border:1px solid var(--error)}
+
+        .btn-d:hover:not(:disabled){background:rgba(239,68,68,.1)}
+
+        .btn-s{background:var(--success);color:#fff}.btn-s:hover:not(:disabled){background:#16a34a}
+
+        .btn:disabled{opacity:.4;cursor:not-allowed}
+
+        .btn-sm{padding:5px 11px;font-size:12px}
+
+        .btn-w{width:100%}
+
+
+
+        /* ── Drop zone ─────────────────────────────────────────────────── */
+
+        .dz{border:2px dashed var(--border);border-radius:var(--r);padding:30px 20px;
+
+            text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3)}
+
+        .dz:hover,.dz.over{border-color:var(--primary);background:var(--primary-l)}
+
+        .dz-icon{font-size:32px;margin-bottom:8px}
+
+        .dz p{color:var(--muted);font-size:13px}
+
+        .dz strong{color:var(--primary)}
+
+        .dz .sub{font-size:11px;margin-top:4px;color:var(--muted2)}
+
+
+
+        /* ── File list ─────────────────────────────────────────────────── */
+
+        .fl{list-style:none;margin-top:10px}
+
+        .fi{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);
+
+            border-radius:var(--rs);margin-bottom:5px;font-size:13px;border:1px solid var(--border)}
+
+        .fi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+        .fi-sz{font-size:11px;color:var(--muted);white-space:nowrap}
+
+        .fi-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:17px;
+
+            padding:0 3px;line-height:1;transition:color .15s}
+
+        .fi-rm:hover{color:var(--error)}
+
+
+
+        /* ── Alerts ────────────────────────────────────────────────────── */
+
+        .alert{padding:11px 14px;border-radius:var(--rs);font-size:13px;margin-top:12px;
+
+            display:flex;align-items:flex-start;gap:9px;line-height:1.5}
+
+        .a-ok{background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3);color:#86efac}
+
+        .a-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+
+        .a-inf{background:var(--primary-l);  border:1px solid rgba(108,99,255,.3);color:#a5b4fc}
+
+        .a-warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fcd34d}
+
+
+
+        /* ── Badges ────────────────────────────────────────────────────── */
+
+        .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;
+
+            font-size:11px;font-weight:600}
+
+        .b-ok{background:rgba(34,197,94,.15);color:var(--success)}
+
+        .b-err{background:rgba(239,68,68,.15);color:var(--error)}
+
+        .b-inf{background:var(--primary-l);color:var(--primary)}
+
+        .b-warn{background:rgba(245,158,11,.15);color:var(--warn)}
+
+
+
+        /* ── Spinner ───────────────────────────────────────────────────── */
+
+        .spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.2);
+
+            border-top-color:#fff;border-radius:50%;animation:sp .65s linear infinite;display:inline-block}
+
+        @keyframes sp{to{transform:rotate(360deg)}}
+
+        .spin-dark{border-color:var(--border);border-top-color:var(--primary)}
+
+
+
+        /* ── Result box ────────────────────────────────────────────────── */
+
+        .rbox{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);
+
+            padding:13px 15px;margin-top:12px;font-size:13px;white-space:pre-wrap;
+
+            word-break:break-word;max-height:300px;overflow-y:auto;line-height:1.7;color:var(--text)}
+
+
+
+        /* ── Stats ─────────────────────────────────────────────────────── */
+
+        .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+
+        .stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);
+
+            padding:13px 18px;flex:1;min-width:110px}
+
+        .stat-val{font-size:26px;font-weight:700;color:var(--primary)}
+
+        .stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+
+
+        /* ── Chat ──────────────────────────────────────────────────────── */
+
+        .chat-wrap{display:flex;flex-direction:column;gap:12px;max-height:420px;
+
+            overflow-y:auto;padding-right:3px;margin-bottom:14px}
+
+        .bubble{padding:11px 14px;border-radius:var(--r);font-size:13.5px;line-height:1.55;max-width:84%}
+
+        .bubble.u{background:var(--primary);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+
+        .bubble.a{background:var(--bg3);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:3px}
+
+        .bubble .model{font-size:10px;color:var(--muted);margin-top:5px}
+
+        .chat-in{display:flex;gap:9px}
+
+        .chat-in input{flex:1}
+
+
+
+        /* ── Source tags ───────────────────────────────────────────────── */
+
+        .src-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+
+        .src-tag{background:var(--bg3);border:1px solid var(--border);border-radius:20px;
+
+            padding:3px 11px;font-size:11.5px;color:var(--muted)}
+
+
+
+        /* ── Table ─────────────────────────────────────────────────────── */
+
+        table{width:100%;border-collapse:collapse;font-size:13px}
+
+        th{text-align:left;padding:6px 10px;color:var(--muted);font-weight:600;
+
+            border-bottom:1px solid var(--border)}
+
+        td{padding:8px 10px;border-bottom:1px solid var(--border)}
+
+        tr:last-child td{border-bottom:none}
+
+
+
+        /* ── Divider ───────────────────────────────────────────────────── */
+
+        hr{border:none;border-top:1px solid var(--border);margin:18px 0}
+
+
+
+        /* ── Hidden pages ──────────────────────────────────────────────── */
+
+        .page{display:none}.page.active{display:block}
+
+    </style>
+
+</head>
+<body>
+<div class="layout">
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SIDEBAR
+    ════════════════════════════════════════════════════════════════ -->
+
+    <aside class="sidebar">
+        <div class="sb-logo">
+            <h1>MediaMind</h1>
+            <span>Media Processing Platform</span>
+        </div>
+        <nav class="sb-nav">
+            <div class="sb-section">Media Pipeline</div>
+            <div class="sb-item active" onclick="nav('upload')" id="nav-upload">
+                <span class="sb-icon">📤</span>Upload
+            </div>
+            <div class="sb-item" onclick="nav('convert')" id="nav-convert">
+                <span class="sb-icon">🔄</span>Convert
+            </div>
+            <div class="sb-item" onclick="nav('download')" id="nav-download">
+                <span class="sb-icon">⬇️</span>Download
+            </div>
+            <div class="sb-section">Intelligence</div>
+            <div class="sb-item" onclick="nav('qa')" id="nav-qa">
+                <span class="sb-icon">🤖</span>Q&amp;A
+            </div>
+        </nav>
+        <div class="sb-ports">
+            <div class="sb-ports-title">Services</div>
+            <div class="port-row"><span class="port-label">Upload</span><span class="port-badge">:8081</span></div>
+            <div class="port-row"><span class="port-label">Conversion</span><span class="port-badge">:8080</span></div>
+            <div class="port-row"><span class="port-label">Download</span><span class="port-badge">:8082</span></div>
+            <div class="port-row"><span class="port-label">Q&amp;A</span><span class="port-badge">:8083</span></div>
+        </div>
+    </aside>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         MAIN CONTENT
+    ════════════════════════════════════════════════════════════════ -->
+
+    <main class="main">
+
+        <!-- ────────────────────────────── UPLOAD PAGE ──────────────────── -->
+
+        <div class="page active" id="page-upload">
+            <div class="ph"><h2>📤 Upload Media</h2>
+                <p>Upload audio/video to MinIO. Automatically queues a Kafka conversion job.</p></div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('up','single',this)">Single File</button>
+                <button class="tab"        onclick="switchTab('up','batch', this)">Batch Upload</button>
+            </div>
+
+            <!-- Single upload -->
+
+            <div id="up-single">
+                <div class="card">
+                    <div class="card-title">📁 Single File</div>
+                    <div class="fr">
+                        <div class="dz" id="dz-single"
+                             ondragover="dzOver(event,'dz-single')" ondragleave="dzOut('dz-single')"
+                             ondrop="dzDrop(event,'dz-single','inp-single','sz-single','nm-single')"
+                             onclick="document.getElementById('inp-single').click()">
+                            <div class="dz-icon" id="dz-single-icon">☁️</div>
+                            <p id="nm-single">Drag &amp; drop or <strong>click to browse</strong></p>
+                            <p class="sub" id="sz-single">mp4, webm, avi, wmv, mp3, wav, weba — max 10 GB</p>
+                        </div>
+                        <input type="file" id="inp-single" accept=".mp4,.webm,.avi,.wmv,.mp3,.wav,.weba" style="display:none"
+                               onchange="fileChosen('inp-single','dz-single-icon','nm-single','sz-single')"/>
+                    </div>
+                    <div class="fr">
+                        <label class="lbl">Target Output Format</label>
+                        <select id="fmt-single">
+                            <option>mp3</option><option>mp4</option><option>wav</option>
+                            <option>webm</option><option>avi</option><option>wmv</option><option>weba</option>
+                        </select>
+                        <p class="hint">The file will be converted to this format automatically after upload.</p>
+                    </div>
+                    <button class="btn btn-p btn-w" onclick="doUploadSingle()">⬆️ Upload File</button>
+                    <div id="res-single"></div>
+                </div>
+            </div>
+
+            <!-- Batch upload -->
+
+            <div id="up-batch" style="display:none">
+                <div class="card">
+                    <div class="card-title">📦 Batch Upload</div>
+                    <div class="fr">
+                        <div class="dz" id="dz-batch"
+                             ondragover="dzOver(event,'dz-batch')" ondragleave="dzOut('dz-batch')"
+                             ondrop="dzDropMulti(event,'dz-batch')"
+                             onclick="document.getElementById('inp-batch').click()">
+                            <div class="dz-icon">📦</div>
+                            <p>Drag &amp; drop <strong>multiple files</strong> or <strong>click to browse</strong></p>
+                            <p class="sub">Each file queues its own conversion job</p>
+                        </div>
+                        <input type="file" id="inp-batch" multiple accept=".mp4,.webm,.avi,.wmv,.mp3,.wav,.weba"
+                               style="display:none" onchange="batchChosen()"/>
+                    </div>
+                    <ul class="fl" id="batch-list"></ul>
+                    <div class="fr" style="margin-top:10px">
+                        <label class="lbl">Target Output Format (applied to all files)</label>
+                        <select id="fmt-batch">
+                            <option>mp3</option><option>mp4</option><option>wav</option>
+                            <option>webm</option><option>avi</option><option>wmv</option><option>weba</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-p btn-w" onclick="doUploadBatch()">⬆️ Upload All Files</button>
+                    <div id="res-batch"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────── CONVERT PAGE ─────────────────── -->
+
+        <div class="page" id="page-convert">
+            <div class="ph"><h2>🔄 Convert Media</h2>
+                <p>Run FFmpeg-powered operations on files already in MinIO. Results download to your browser.</p></div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('cv','format',    this)">Format Convert</button>
+                <button class="tab"        onclick="switchTab('cv','waveform',  this)">Waveform Video</button>
+                <button class="tab"        onclick="switchTab('cv','caption',   this)">Add Captions</button>
+                <button class="tab"        onclick="switchTab('cv','transcribe',this)">Transcribe</button>
+            </div>
+
+            <!-- Format Convert -->
+
+            <div id="cv-format">
+                <div class="card">
+                    <div class="card-title">🎬 Convert Format</div>
+                    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+                        Enter the exact blob name returned by the Upload page. The converted file downloads to your browser
+                        <strong> and</strong> is saved to MinIO's converted bucket.
+                    </p>
+                    <div class="fr">
+                        <label class="lbl">Blob Name (file in MinIO input bucket)</label>
+                        <input type="text" id="cv-blobname" placeholder="e.g. myvideo.mp4"/>
+                    </div>
+                    <div class="fg2">
+                        <div class="fr">
+                            <label class="lbl">Target Format</label>
+                            <select id="cv-format-sel">
+                                <option>mp3</option><option>mp4</option><option>wav</option><option>webm</option>
+                                <option>avi</option><option>wmv</option><option>ogg</option><option>flac</option>
+                                <option>mkv</option><option>mov</option><option>m4a</option><option>weba</option>
+                            </select>
+                        </div>
+                        <div class="fr">
+                            <label class="lbl">MIME Type <span style="font-weight:400">(optional — auto-detected)</span></label>
+                            <input type="text" id="cv-mime" placeholder="e.g. audio/mpeg"/>
+                        </div>
+                    </div>
+                    <div class="fr">
+                        <label class="lbl">Custom Video Codec <span style="font-weight:400">(optional)</span></label>
+                        <input type="text" id="cv-vcodec" placeholder="e.g. libx264"/>
+                    </div>
+                    <div class="fr">
+                        <label class="lbl">Custom Audio Codec <span style="font-weight:400">(optional)</span></label>
+                        <input type="text" id="cv-acodec" placeholder="e.g. aac"/>
+                    </div>
+                    <div class="alert a-inf" style="margin-bottom:14px">
+                        ⏳ Conversion runs server-side. Large files may take several minutes. Don't close this tab.
+                    </div>
+                    <button class="btn btn-p btn-w" onclick="doConvert()">🔄 Convert &amp; Download</button>
+                    <div id="res-convert"></div>
+                </div>
+            </div>
+
+            <!-- Waveform -->
+
+            <div id="cv-waveform" style="display:none">
+                <div class="card">
+                    <div class="card-title">🌊 Waveform Visualizer</div>
+                    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+                        Generates an MP4 video showing the audio waveform. Optionally overlay a background image.
+                        The result downloads to your browser and is saved to MinIO.
+                    </p>
+                    <div class="fr">
+                        <label class="lbl">Audio Blob Name in MinIO</label>
+                        <input type="text" id="wf-blob" placeholder="e.g. podcast.mp3"/>
+                    </div>
+                    <div class="fr">
+                        <label class="lbl">Background Image <span style="font-weight:400">(optional — jpg/png)</span></label>
+                        <div style="display:flex;gap:9px;align-items:center">
+                            <button class="btn btn-o btn-sm" onclick="document.getElementById('wf-img').click()">📂 Choose Image</button>
+                            <span id="wf-img-name" style="font-size:12px;color:var(--muted)">No image selected</span>
+                            <button class="btn btn-sm" style="color:var(--error);background:none;border:none;cursor:pointer;display:none"
+                                    id="wf-img-rm" onclick="removeWfImg()">✕</button>
+                        </div>
+                        <input type="file" id="wf-img" accept="image/*" style="display:none" onchange="wfImgChosen()"/>
+                    </div>
+                    <button class="btn btn-p btn-w" onclick="doWaveform()">🌊 Generate Waveform &amp; Download</button>
+                    <div id="res-waveform"></div>
+                </div>
+            </div>
+
+            <!-- Caption -->
+
+            <div id="cv-caption" style="display:none">
+                <div class="card">
+                    <div class="card-title">💬 Auto-Caption Video</div>
+                    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+                        Runs Whisper transcription on your video, generates an SRT subtitle file,
+                        then burns the captions directly into the video using FFmpeg.
+                        The captioned MP4 downloads to your browser and is saved to MinIO.
+                    </p>
+                    <div class="fr">
+                        <label class="lbl">Video Blob Name in MinIO</label>
+                        <input type="text" id="cap-blob" placeholder="e.g. lecture.mp4"/>
+                    </div>
+                    <div class="alert a-warn" style="margin-bottom:14px">
+                        ⏳ This runs Whisper + FFmpeg in sequence. Expect 2–5× the video duration for processing time.
+                    </div>
+                    <button class="btn btn-p btn-w" onclick="doCaption()">💬 Generate Captions &amp; Download</button>
+                    <div id="res-caption"></div>
+                </div>
+            </div>
+
+            <!-- Transcribe -->
+
+            <div id="cv-transcribe" style="display:none">
+                <div class="card">
+                    <div class="card-title">📝 Transcribe Audio / Video</div>
+                    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+                        Uses OpenAI Whisper (base model) to convert speech to text.
+                        A <code>.txt</code> file downloads to your browser and is saved to MinIO.
+                    </p>
+                    <div class="fr">
+                        <label class="lbl">Audio/Video Blob Name in MinIO</label>
+                        <input type="text" id="tr-blob" placeholder="e.g. interview.mp3"/>
+                    </div>
+                    <button class="btn btn-p btn-w" onclick="doTranscribe()">📝 Transcribe &amp; Download</button>
+                    <div id="res-transcribe"></div>
+                    <div id="tr-preview" style="display:none">
+                        <label class="lbl" style="margin-top:14px;display:block">Transcript Preview</label>
+                        <div class="rbox" id="tr-text"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────── DOWNLOAD PAGE ────────────────── -->
+
+        <div class="page" id="page-download">
+            <div class="ph"><h2>⬇️ Download File</h2>
+                <p>Retrieve any converted file from MinIO and download it directly to your Windows machine.</p></div>
+
+            <div class="card">
+                <div class="card-title">📥 Download from MinIO</div>
+                <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+                    Files in MinIO's <strong>converted bucket</strong> follow a naming pattern.
+                    Enter the exact blob name as shown in the reference table below.
+                </p>
+                <div class="fr">
+                    <label class="lbl">Blob Name (in converted-files bucket)</label>
+                    <input type="text" id="dl-blob" placeholder="e.g. myvideo.mp4_converted.mp3"/>
+                </div>
+                <div class="fg2">
+                    <div class="fr">
+                        <label class="lbl">Output Format <span style="font-weight:400">(sets download extension)</span></label>
+                        <select id="dl-fmt" onchange="dlFmtChange()">
+                            <option value="mp3">mp3</option><option value="mp4">mp4</option>
+                            <option value="wav">wav</option><option value="webm">webm</option>
+                            <option value="avi">avi</option><option value="wmv">wmv</option>
+                            <option value="ogg">ogg</option><option value="flac">flac</option>
+                            <option value="mkv">mkv</option><option value="mov">mov</option>
+                            <option value="m4a">m4a</option><option value="txt">txt</option>
+                        </select>
+                    </div>
+                    <div class="fr">
+                        <label class="lbl">MIME Type <span style="font-weight:400">(auto-set from format)</span></label>
+                        <input type="text" id="dl-mime" value="audio/mpeg"/>
+                    </div>
+                </div>
+                <button class="btn btn-p btn-w" onclick="doDownload()">⬇️ Download File</button>
+                <div id="res-download"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📋 Blob Name Reference</div>
+                <p style="color:var(--muted);font-size:12px;margin-bottom:12px">
+                    After each operation, files are stored in MinIO with these name patterns:
+                </p>
+                <table>
+                    <thead><tr><th>Operation</th><th>MinIO Blob Name</th><th>Bucket</th></tr></thead>
+                    <tbody>
+                    <tr><td>Original upload</td><td><code>{filename}</code></td><td>input</td></tr>
+                    <tr><td>Format Convert</td><td><code>{blobName}_converted.{format}</code></td><td>converted</td></tr>
+                    <tr><td>Waveform Video</td><td><code>{blobName}_waveform.mp4</code></td><td>converted</td></tr>
+                    <tr><td>Caption Video</td><td><code>{blobName}_captioned.mp4</code></td><td>converted</td></tr>
+                    <tr><td>Transcription</td><td><code>{blobName}_transcription.txt</code></td><td>converted</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────── Q&A PAGE ─────────────────────── -->
+
+        <div class="page" id="page-qa">
+            <div class="ph"><h2>🤖 Q&amp;A Intelligence</h2>
+                <p>Ingest documents, audio, or web pages — then ask questions powered by Ollama (local LLM).</p></div>
+
+            <!-- Stats -->
+
+            <div class="stat-row" id="qa-stats">
+                <div class="stat">
+                    <div class="stat-val" id="qa-chunks">0</div>
+                    <div class="stat-lbl">Context Chunks Loaded</div>
+                </div>
+                <div class="stat" style="flex:3">
+                    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">Ingested Sources</div>
+                    <div class="src-list" id="qa-sources"><span style="color:var(--muted);font-size:12px">None yet</span></div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('qa','ingest',this)">📥 Ingest Content</button>
+                <button class="tab"        onclick="switchTab('qa','chat',  this);loadQaStatus()">💬 Ask Questions</button>
+                <button class="tab"        onclick="switchTab('qa','ctx',   this);loadQaStatus()">⚙️ Manage Context</button>
+            </div>
+
+            <!-- Ingest -->
+
+            <div id="qa-ingest">
+                <div class="card">
+                    <div class="card-title">📥 Ingest Content</div>
+                    <div style="display:flex;gap:8px;margin-bottom:18px">
+                        <button class="btn btn-p btn-sm" onclick="switchIngest('file',this)" id="ing-file-btn">📄 From File</button>
+                        <button class="btn btn-o btn-sm" onclick="switchIngest('url', this)" id="ing-url-btn" >🌐 From URL</button>
+                    </div>
+
+                    <!-- File ingest -->
+                    <div id="ing-file">
+                        <p style="color:var(--muted);font-size:13px;margin-bottom:12px">
+                            Supported: <strong>Audio/Video</strong> → Whisper transcription &nbsp;|&nbsp;
+                            <strong>PDF</strong> → PDFBox &nbsp;|&nbsp;
+                            <strong>DOCX</strong> → Apache POI &nbsp;|&nbsp;
+                            <strong>TXT/CSV/MD</strong> → read directly
+                        </p>
+                        <div class="fr">
+                            <div class="dz" id="dz-qa"
+                                 ondragover="dzOver(event,'dz-qa')" ondragleave="dzOut('dz-qa')"
+                                 ondrop="dzDrop(event,'dz-qa','inp-qa','sz-qa','nm-qa')"
+                                 onclick="document.getElementById('inp-qa').click()">
+                                <div class="dz-icon" id="dz-qa-icon">📂</div>
+                                <p id="nm-qa">Drag &amp; drop or <strong>click to browse</strong></p>
+                                <p class="sub" id="sz-qa">Any file type accepted</p>
+                            </div>
+                            <input type="file" id="inp-qa" style="display:none"
+                                   onchange="fileChosen('inp-qa','dz-qa-icon','nm-qa','sz-qa')"/>
+                        </div>
+                        <button class="btn btn-p btn-w" onclick="doIngestFile()">📥 Ingest File</button>
+                        <div id="res-ingest-file"></div>
+                    </div>
+
+                    <!-- URL ingest -->
+                    <div id="ing-url" style="display:none">
+                        <p style="color:var(--muted);font-size:13px;margin-bottom:12px">
+                            <strong>Webpage URL</strong>: scraped via JSoup (text extracted, nav/scripts stripped)<br/>
+                            <strong>YouTube URL</strong>: audio downloaded via yt-dlp, then transcribed by Whisper
+                        </p>
+                        <div class="fr">
+                            <label class="lbl">URL</label>
+                            <input type="url" id="ing-url-input"
+                                   placeholder="https://en.wikipedia.org/wiki/...  or  https://youtube.com/watch?v=..."
+                                   onkeydown="if(event.key==='Enter')doIngestUrl()"/>
+                        </div>
+                        <div style="display:flex;gap:7px;margin-bottom:12px">
+                            <span class="badge b-inf">🌐 Webpage</span>
+                            <span class="badge b-warn">▶️ YouTube (needs yt-dlp installed)</span>
+                        </div>
+                        <button class="btn btn-p btn-w" onclick="doIngestUrl()">🌐 Ingest URL</button>
+                        <div id="res-ingest-url"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Chat -->
+
+            <div id="qa-chat" style="display:none">
+                <div class="card">
+                    <div class="card-title">💬 Ask Questions</div>
+                    <div id="qa-no-ctx" class="alert a-inf" style="margin-bottom:14px;display:none">
+                        ℹ️ No context loaded. Switch to <strong>Ingest Content</strong> and add documents or URLs first.
+                    </div>
+                    <div id="qa-empty-hint" style="text-align:center;padding:22px 0;color:var(--muted)">
+                        <div style="font-size:28px;margin-bottom:7px">🤖</div>
+                        <p>Context loaded. Ask anything about your ingested documents.</p>
+                    </div>
+                    <div class="chat-wrap" id="chat-msgs" style="display:none"></div>
+                    <div class="chat-in">
+                        <input type="text" id="chat-input" placeholder="Ask a question about your documents…"
+                               onkeydown="if(event.key==='Enter')doAsk()"/>
+                        <button class="btn btn-p" onclick="doAsk()">Send</button>
+                    </div>
+                    <button class="btn btn-o btn-sm" style="margin-top:9px" onclick="clearChat()">🗑️ Clear Chat</button>
+                </div>
+            </div>
+
+            <!-- Context management -->
+
+            <div id="qa-ctx" style="display:none">
+                <div class="card">
+                    <div class="card-title">⚙️ Context Management</div>
+                    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+                        Context is stored <strong>in memory</strong> — it is lost when the Q&amp;A service restarts.
+                        Use this panel to review or wipe what's loaded.
+                    </p>
+                    <div id="ctx-src-display">
+                        <label class="lbl">Loaded Sources</label>
+                        <div id="ctx-src-list" style="color:var(--muted);font-size:13px">Loading…</div>
+                    </div>
+                    <hr/>
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                        <div>
+                            <div style="font-weight:600;margin-bottom:3px">Clear All Context</div>
+                            <div style="font-size:12px;color:var(--muted)">Removes every ingested document and URL from memory.</div>
+                        </div>
+                        <button class="btn btn-d" onclick="doClear()">🗑️ Clear Context</button>
+                    </div>
+                    <div id="res-ctx"></div>
+                </div>
+            </div>
+        </div>
+
+    </main><!-- end .main -->
+</div><!-- end .layout -->
+
+<script>
+    /* ══════════════════════════════════════════════════════════════════
+       CONFIG — change these if your services run on different ports
+    ══════════════════════════════════════════════════════════════════ */
+    const BASE = {
+        upload:   'http://localhost:8081',
+        convert:  'http://localhost:8080',
+        download: 'http://localhost:8082',
+        qa:       'http://localhost:8083',
+    }
+
+    const MIME_MAP = {
+        mp4:'video/mp4', mp3:'audio/mpeg', wav:'audio/wav', webm:'video/webm',
+        avi:'video/x-msvideo', wmv:'video/x-ms-wmv', ogg:'audio/ogg',
+        flac:'audio/flac', mkv:'video/x-matroska', mov:'video/quicktime',
+        m4a:'audio/mp4', txt:'text/plain', weba:'audio/webm',
+    }
+
+    /* ── State ─────────────────────────────────────────────────────── */
+    let batchFiles = []   // files accumulated for batch upload
+    let chatMsgs   = []   // chat history objects
+
+    /* ══════════════════════════════════════════════════════════════════
+       NAVIGATION
+    ══════════════════════════════════════════════════════════════════ */
+    function nav(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
+        document.getElementById('page-' + id).classList.add('active')
+        document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'))
+        document.getElementById('nav-' + id).classList.add('active')
+        if (id === 'qa') loadQaStatus()
+    }
+
+    /* ── Tab switcher (generic) ─────────────────────────────────────── */
+    function switchTab(prefix, id, btn) {
+        // hide all tab panels for this prefix
+        document.querySelectorAll(`[id^="${prefix}-"]`).forEach(el => {
+            if (el.tagName !== 'BUTTON') el.style.display = 'none'
+        })
+        const target = document.getElementById(prefix + '-' + id)
+        if (target) target.style.display = 'block'
+        // update tab button states within the same .tabs container
+        if (btn) {
+            btn.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+            btn.classList.add('active')
+        }
+    }
+
+    /* ── Ingest sub-tab ─────────────────────────────────────────────── */
+    function switchIngest(id, btn) {
+        document.getElementById('ing-file').style.display = id === 'file' ? 'block' : 'none'
+        document.getElementById('ing-url') .style.display = id === 'url'  ? 'block' : 'none'
+        document.getElementById('ing-file-btn').className = id === 'file' ? 'btn btn-p btn-sm' : 'btn btn-o btn-sm'
+        document.getElementById('ing-url-btn') .className = id === 'url'  ? 'btn btn-p btn-sm' : 'btn btn-o btn-sm'
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       DROP-ZONE HELPERS
+    ══════════════════════════════════════════════════════════════════ */
+    function dzOver(e, id)  { e.preventDefault(); document.getElementById(id).classList.add('over') }
+    function dzOut(id)      { document.getElementById(id).classList.remove('over') }
+
+    function dzDrop(e, dzId, inputId, szId, nmId) {
+        e.preventDefault(); dzOut(dzId)
+        const f = e.dataTransfer.files[0]
+        if (!f) return
+        // sync to the hidden input for later use
+        const dt = new DataTransfer(); dt.items.add(f)
+        const inp = document.getElementById(inputId); inp.files = dt.files
+        document.getElementById(nmId).innerHTML = `<strong>${f.name}</strong>`
+        document.getElementById(szId).textContent = fmtSize(f.size)
+        const iconEl = document.getElementById(dzId + '-icon')
+        if (iconEl) iconEl.textContent = '📄'
+    }
+
+    function fileChosen(inputId, iconId, nmId, szId) {
+        const f = document.getElementById(inputId).files[0]
+        if (!f) return
+        document.getElementById(nmId).innerHTML = `<strong>${f.name}</strong>`
+        document.getElementById(szId).textContent = fmtSize(f.size)
+        const iconEl = document.getElementById(iconId)
+        if (iconEl) iconEl.textContent = '📄'
+    }
+
+    function dzDropMulti(e, dzId) {
+        e.preventDefault(); dzOut(dzId)
+        addBatchFiles(e.dataTransfer.files)
+    }
+
+    function batchChosen() {
+        addBatchFiles(document.getElementById('inp-batch').files)
+        document.getElementById('inp-batch').value = ''
+    }
+
+    function addBatchFiles(fileList) {
+        const existing = new Set(batchFiles.map(f => f.name))
+        Array.from(fileList).forEach(f => { if (!existing.has(f.name)) { batchFiles.push(f); existing.add(f.name) } })
+        renderBatchList()
+    }
+
+    function renderBatchList() {
+        const ul = document.getElementById('batch-list')
+        ul.innerHTML = batchFiles.map((f, i) => `
+    <li class="fi">
+      <span class="fi-name">🎵 ${f.name}</span>
+      <span class="fi-sz">${fmtSize(f.size)}</span>
+      <button class="fi-rm" onclick="removeBatch(${i})">×</button>
+    </li>`).join('')
+    }
+
+    function removeBatch(i) {
+        batchFiles.splice(i, 1)
+        renderBatchList()
+    }
+
+    function fmtSize(bytes) {
+        if (bytes < 1024) return bytes + ' B'
+        if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'
+        return (bytes/1024/1024).toFixed(2) + ' MB'
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       UI HELPERS
+    ══════════════════════════════════════════════════════════════════ */
+    function setLoading(btnEl, loading, defaultLabel) {
+        if (loading) {
+            btnEl.disabled = true
+            btnEl.innerHTML = '<span class="spin"></span>&nbsp;Please wait…'
+        } else {
+            btnEl.disabled = false
+            btnEl.innerHTML = defaultLabel
+        }
+    }
+
+    function showRes(targetId, type, html) {
+        const el = document.getElementById(targetId)
+        el.innerHTML = `<div class="alert ${type}">${html}</div>`
+    }
+
+    function triggerDownload(blob, filename) {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a'); a.href = url; a.download = filename
+        document.body.appendChild(a); a.click()
+        document.body.removeChild(a); URL.revokeObjectURL(url)
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       UPLOAD SERVICE  (port 8081)
+    ══════════════════════════════════════════════════════════════════ */
+    async function doUploadSingle() {
+        const file = document.getElementById('inp-single').files[0]
+        if (!file) { showRes('res-single','a-err','⚠️ Please select a file first.'); return }
+        const fmt  = document.getElementById('fmt-single').value
+        const btn  = event.target
+        setLoading(btn, true, '⬆️ Upload File')
+        try {
+            const form = new FormData()
+            form.append('file', file)
+            form.append('outputFormat', fmt)
+            const r = await fetch(`${BASE.upload}/upload`, { method:'POST', body:form }).then(r => r.json())
+            if (r.uploaded) {
+                showRes('res-single', 'a-ok',
+                    `✅ Uploaded as <strong>${r.uploaded}</strong>. Conversion job queued → target: <strong>.${fmt}</strong>`)
+            } else {
+                const reason = r.failed?.reason || JSON.stringify(r.failed)
+                showRes('res-single', 'a-err', `❌ ${reason}`)
+            }
+        } catch(e) { showRes('res-single','a-err', `❌ ${e.message} — is the Upload service running on :8081?`) }
+        finally { setLoading(btn, false, '⬆️ Upload File') }
+    }
+
+    async function doUploadBatch() {
+        if (!batchFiles.length) { showRes('res-batch','a-err','⚠️ No files selected.'); return }
+        const fmt = document.getElementById('fmt-batch').value
+        const btn = event.target
+        setLoading(btn, true, `⬆️ Upload All Files`)
+        try {
+            const form = new FormData()
+            batchFiles.forEach(f => form.append('files', f))
+            form.append('outputFormat', fmt)
+            const r = await fetch(`${BASE.upload}/upload/batch`, { method:'POST', body:form }).then(r => r.json())
+            const ok  = r.uploaded || []
+            const fail = r.failed  || []
+            let html = ''
+            if (ok.length)   html += `<div>✅ <strong>${ok.length}</strong> uploaded: ${ok.join(', ')}</div>`
+            if (fail.length) html += `<div style="margin-top:6px">❌ <strong>${fail.length}</strong> failed: ${fail.map(f=>f.file+': '+f.error).join('; ')}</div>`
+            showRes('res-batch', fail.length && !ok.length ? 'a-err' : 'a-ok', html)
+            if (ok.length) { batchFiles = []; renderBatchList() }
+        } catch(e) { showRes('res-batch','a-err', `❌ ${e.message} — is the Upload service running on :8081?`) }
+        finally { setLoading(btn, false, '⬆️ Upload All Files') }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       CONVERSION SERVICE  (port 8080)
+    ══════════════════════════════════════════════════════════════════ */
+    async function doConvert() {
+        const blobName = document.getElementById('cv-blobname').value.trim()
+        const format   = document.getElementById('cv-format-sel').value
+        const mimeType = document.getElementById('cv-mime').value.trim()
+        const vcodec   = document.getElementById('cv-vcodec').value.trim()
+        const acodec   = document.getElementById('cv-acodec').value.trim()
+        if (!blobName) { showRes('res-convert','a-err','⚠️ Enter a blob name.'); return }
+        const btn = event.target
+        setLoading(btn, true, '🔄 Convert & Download')
+        showRes('res-convert','a-inf','⏳ Converting… this may take a few minutes for large files.')
+        try {
+            const form = new FormData()
+            form.append('blobName', blobName)
+            form.append('format', format)
+            if (mimeType) form.append('mimeType', mimeType)
+            if (vcodec || acodec) {
+                const codecs = {}
+                if (vcodec) codecs.videoCodec = vcodec
+                if (acodec) codecs.audioCodec = acodec
+                form.append('codecs', new Blob([JSON.stringify(codecs)], {type:'application/json'}))
+            }
+            const res = await fetch(`${BASE.convert}/convert`, { method:'POST', body:form })
+            if (!res.ok) { showRes('res-convert','a-err',`❌ Server error HTTP ${res.status}`); return }
+            const blob = await res.blob()
+            const filename = `${blobName}_converted.${format}`
+            triggerDownload(blob, filename)
+            showRes('res-convert','a-ok',`✅ Done — <strong>${filename}</strong> downloaded. Also saved in MinIO converted bucket.`)
+        } catch(e) { showRes('res-convert','a-err',`❌ ${e.message}`) }
+        finally { setLoading(btn, false, '🔄 Convert & Download') }
+    }
+
+    async function doWaveform() {
+        const blobName = document.getElementById('wf-blob').value.trim()
+        if (!blobName) { showRes('res-waveform','a-err','⚠️ Enter a blob name.'); return }
+        const btn = event.target
+        setLoading(btn, true, '🌊 Generate Waveform & Download')
+        showRes('res-waveform','a-inf','⏳ Generating waveform video…')
+        try {
+            const form = new FormData()
+            form.append('blobName', blobName)
+            const imgFile = document.getElementById('wf-img').files[0]
+            if (imgFile) form.append('backgroundImage', imgFile)
+            const res = await fetch(`${BASE.convert}/convert/waveform`, { method:'POST', body:form })
+            if (!res.ok) { showRes('res-waveform','a-err',`❌ HTTP ${res.status}`); return }
+            triggerDownload(await res.blob(), `${blobName}_waveform.mp4`)
+            showRes('res-waveform','a-ok',`✅ Waveform video downloaded. Also saved in MinIO.`)
+        } catch(e) { showRes('res-waveform','a-err',`❌ ${e.message}`) }
+        finally { setLoading(btn, false, '🌊 Generate Waveform & Download') }
+    }
+
+    async function doCaption() {
+        const blobName = document.getElementById('cap-blob').value.trim()
+        if (!blobName) { showRes('res-caption','a-err','⚠️ Enter a blob name.'); return }
+        const btn = event.target
+        setLoading(btn, true, '💬 Generate Captions & Download')
+        showRes('res-caption','a-inf','⏳ Running Whisper transcription + FFmpeg subtitle burn…')
+        try {
+            const form = new FormData()
+            form.append('blobName', blobName)
+            const res = await fetch(`${BASE.convert}/convert/caption`, { method:'POST', body:form })
+            if (!res.ok) { showRes('res-caption','a-err',`❌ HTTP ${res.status}`); return }
+            triggerDownload(await res.blob(), `${blobName}_captioned.mp4`)
+            showRes('res-caption','a-ok',`✅ Captioned video downloaded. Also saved in MinIO.`)
+        } catch(e) { showRes('res-caption','a-err',`❌ ${e.message}`) }
+        finally { setLoading(btn, false, '💬 Generate Captions & Download') }
+    }
+
+    async function doTranscribe() {
+        const blobName = document.getElementById('tr-blob').value.trim()
+        if (!blobName) { showRes('res-transcribe','a-err','⚠️ Enter a blob name.'); return }
+        const btn = event.target
+        setLoading(btn, true, '📝 Transcribe & Download')
+        showRes('res-transcribe','a-inf','⏳ Running Whisper transcription…')
+        document.getElementById('tr-preview').style.display = 'none'
+        try {
+            const form = new FormData()
+            form.append('blobName', blobName)
+            const res = await fetch(`${BASE.convert}/convert/transcribe`, { method:'POST', body:form })
+            if (!res.ok) { showRes('res-transcribe','a-err',`❌ HTTP ${res.status}`); return }
+            const blob = await res.blob()
+            const text = await blob.text()
+            triggerDownload(new Blob([text],{type:'text/plain'}), `${blobName}_transcription.txt`)
+            showRes('res-transcribe','a-ok','✅ Transcription downloaded. Also saved in MinIO.')
+            document.getElementById('tr-preview').style.display = 'block'
+            document.getElementById('tr-text').textContent = text
+        } catch(e) { showRes('res-transcribe','a-err',`❌ ${e.message}`) }
+        finally { setLoading(btn, false, '📝 Transcribe & Download') }
+    }
+
+    /* ── Waveform image helpers ─────────────────────────────────────── */
+    function wfImgChosen() {
+        const f = document.getElementById('wf-img').files[0]
+        if (!f) return
+        document.getElementById('wf-img-name').textContent = f.name
+        document.getElementById('wf-img-rm').style.display = 'inline-flex'
+    }
+    function removeWfImg() {
+        document.getElementById('wf-img').value = ''
+        document.getElementById('wf-img-name').textContent = 'No image selected'
+        document.getElementById('wf-img-rm').style.display = 'none'
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       DOWNLOAD SERVICE  (port 8082)
+    ══════════════════════════════════════════════════════════════════ */
+    function dlFmtChange() {
+        const fmt = document.getElementById('dl-fmt').value
+        document.getElementById('dl-mime').value = MIME_MAP[fmt] || 'application/octet-stream'
+    }
+
+    async function doDownload() {
+        const blobName = document.getElementById('dl-blob').value.trim()
+        const fmt      = document.getElementById('dl-fmt').value
+        const mime     = document.getElementById('dl-mime').value.trim()
+        if (!blobName) { showRes('res-download','a-err','⚠️ Enter a blob name.'); return }
+        const btn = event.target
+        setLoading(btn, true, '⬇️ Download File')
+        try {
+            const res = await fetch(`${BASE.download}/download`, {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json' },
+                body: JSON.stringify({ blobName, mimeType: mime || 'application/octet-stream', outputFormat: fmt })
+            })
+            if (res.status === 404) { showRes('res-download','a-err','❌ File not found in MinIO. Check the blob name.'); return }
+            if (!res.ok)            { showRes('res-download','a-err',`❌ Server error HTTP ${res.status}`); return }
+            const blob = await res.blob()
+            const base = blobName.includes('.') ? blobName.substring(0, blobName.lastIndexOf('.')) : blobName
+            triggerDownload(blob, `${base}.${fmt}`)
+            showRes('res-download','a-ok','✅ File downloaded successfully.')
+        } catch(e) { showRes('res-download','a-err',`❌ ${e.message} — is the Download service running on :8082?`) }
+        finally { setLoading(btn, false, '⬇️ Download File') }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       Q&A SERVICE  (port 8083)
+    ══════════════════════════════════════════════════════════════════ */
+    async function loadQaStatus() {
+        try {
+            const r = await fetch(`${BASE.qa}/qa/context/status`).then(r => r.json())
+            document.getElementById('qa-chunks').textContent = r.chunksLoaded || 0
+            const srcEl = document.getElementById('qa-sources')
+            if (!r.sources || r.sources.length === 0) {
+                srcEl.innerHTML = '<span style="color:var(--muted);font-size:12px">None yet</span>'
+            } else {
+                srcEl.innerHTML = r.sources.map(s =>
+                    `<span class="src-tag">📄 ${s.length > 45 ? s.slice(0,43)+'…' : s}</span>`
+                ).join('')
+            }
+            // update chat tab awareness
+            const noCtx = document.getElementById('qa-no-ctx')
+            const hint  = document.getElementById('qa-empty-hint')
+            if (r.chunksLoaded > 0) {
+                if (noCtx) noCtx.style.display = 'none'
+                if (hint && !chatMsgs.length) hint.style.display = 'block'
+            } else {
+                if (noCtx) noCtx.style.display = 'flex'
+                if (hint)  hint.style.display  = 'none'
+            }
+            // context page list
+            const ctxList = document.getElementById('ctx-src-list')
+            if (ctxList) {
+                if (!r.sources || r.sources.length === 0) {
+                    ctxList.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0">No context loaded.</div>'
+                } else {
+                    ctxList.innerHTML = `<ul class="fl" style="margin-top:8px">${
+                        r.sources.map(s => `<li class="fi"><span class="fi-name">📄 ${s}</span><span class="badge b-ok">loaded</span></li>`).join('')
+                    }</ul>`
+                }
+            }
+        } catch(e) {
+            document.getElementById('qa-chunks').textContent = '—'
+        }
+    }
+
+    async function doIngestFile() {
+        const file = document.getElementById('inp-qa').files[0]
+        if (!file) { showRes('res-ingest-file','a-err','⚠️ Select a file first.'); return }
+        const btn = event.target
+        setLoading(btn, true, '📥 Ingest File')
+        showRes('res-ingest-file','a-inf','⏳ Ingesting… audio/video files run Whisper transcription and may take a while.')
+        try {
+            const form = new FormData()
+            form.append('file', file)
+            const r = await fetch(`${BASE.qa}/qa/ingest`, { method:'POST', body:form }).then(r => r.json())
+            if (r.status === 'success') {
+                showRes('res-ingest-file','a-ok',
+                    `✅ <strong>${r.source}</strong> ingested — <strong>${r.charactersIndexed.toLocaleString()}</strong> characters indexed.`)
+                loadQaStatus()
+            } else {
+                showRes('res-ingest-file','a-err',`❌ ${r.status}`)
+            }
+        } catch(e) { showRes('res-ingest-file','a-err',`❌ ${e.message} — is the Q&A service running on :8083?`) }
+        finally { setLoading(btn, false, '📥 Ingest File') }
+    }
+
+    async function doIngestUrl() {
+        const url = document.getElementById('ing-url-input').value.trim()
+        if (!url) { showRes('res-ingest-url','a-err','⚠️ Enter a URL.'); return }
+        const btn = event.target
+        setLoading(btn, true, '🌐 Ingest URL')
+        showRes('res-ingest-url','a-inf','⏳ Fetching and ingesting… YouTube links run yt-dlp + Whisper.')
+        try {
+            const r = await fetch(`${BASE.qa}/qa/ingest-url`, {
+                method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url })
+            }).then(r => r.json())
+            if (r.status === 'success') {
+                showRes('res-ingest-url','a-ok',
+                    `✅ Ingested — <strong>${r.charactersIndexed.toLocaleString()}</strong> characters indexed from <em>${r.source}</em>`)
+                loadQaStatus()
+                document.getElementById('ing-url-input').value = ''
+            } else {
+                showRes('res-ingest-url','a-err',`❌ ${r.status}`)
+            }
+        } catch(e) { showRes('res-ingest-url','a-err',`❌ ${e.message}`) }
+        finally { setLoading(btn, false, '🌐 Ingest URL') }
+    }
+
+    async function doAsk() {
+        const input = document.getElementById('chat-input')
+        const q = input.value.trim()
+        if (!q) return
+        input.value = ''
+
+        chatMsgs.push({ role:'user', text: q })
+        renderChat()
+
+        // scroll to bottom
+        const wrap = document.getElementById('chat-msgs')
+        wrap.scrollTop = wrap.scrollHeight
+
+        // thinking bubble
+        const thinkId = 'think-' + Date.now()
+        chatMsgs.push({ role:'assistant', text:'…', id: thinkId, thinking: true })
+        renderChat()
+        wrap.scrollTop = wrap.scrollHeight
+
+        try {
+            const r = await fetch(`${BASE.qa}/qa/ask`, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ question: q })
+            }).then(r => r.json())
+            // replace thinking bubble
+            const idx = chatMsgs.findIndex(m => m.id === thinkId)
+            if (idx >= 0) chatMsgs[idx] = { role:'assistant', text: r.answer, modelUsed: r.modelUsed }
+            renderChat()
+        } catch(e) {
+            const idx = chatMsgs.findIndex(m => m.id === thinkId)
+            if (idx >= 0) chatMsgs[idx] = { role:'assistant', text:`Error: ${e.message}`, modelUsed:'error' }
+            renderChat()
+        }
+        wrap.scrollTop = wrap.scrollHeight
+    }
+
+    function renderChat() {
+        const wrap = document.getElementById('chat-msgs')
+        const hint = document.getElementById('qa-empty-hint')
+
+        if (!chatMsgs.length) {
+            wrap.style.display = 'none'
+            if (hint) hint.style.display = 'block'
+            return
+        }
+        if (hint) hint.style.display = 'none'
+        wrap.style.display = 'flex'
+
+        wrap.innerHTML = chatMsgs.map(m => {
+            if (m.role === 'user') {
+                return `<div class="bubble u">${escHtml(m.text)}</div>`
+            }
+            const txt = m.thinking
+                ? `<span class="spin spin-dark"></span>&nbsp; Thinking…`
+                : escHtml(m.text)
+            const model = m.modelUsed && !m.thinking
+                ? `<div class="model">${m.modelUsed === 'error' ? '⚠️ error' : '🤖 ' + m.modelUsed}</div>`
+                : ''
+            return `<div class="bubble a">${txt}${model}</div>`
+        }).join('')
+    }
+
+    function clearChat() { chatMsgs = []; renderChat() }
+
+    async function doClear() {
+        if (!confirm('Clear all ingested context? This cannot be undone.')) return
+        const btn = event.target
+        setLoading(btn, true, '🗑️ Clear Context')
+        try {
+            await fetch(`${BASE.qa}/qa/context`, { method:'DELETE' })
+            showRes('res-ctx','a-ok','✅ All context cleared.')
+            loadQaStatus()
+        } catch(e) { showRes('res-ctx','a-err',`❌ ${e.message}`) }
+        finally { setLoading(btn, false, '🗑️ Clear Context') }
+    }
+
+    /* ── Util ───────────────────────────────────────────────────────── */
+    function escHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/\n/g,'<br/>')
+    }
+
+    /* ── Boot ───────────────────────────────────────────────────────── */
+    loadQaStatus()
+</script>
+
+</body>
+</html>
