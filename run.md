@@ -1,4 +1,4 @@
-# MediaMind — Run Guide (Windows)
+# MediaSense — Run Guide (Windows)
 
 Assumes you've already completed **SETUP.md** (tools installed, project built, Docker
 infrastructure up, MinIO buckets created). This guide covers starting the services and using
@@ -14,34 +14,34 @@ Open a separate PowerShell window per service. Confirm Kafka/MinIO are already u
 
 **upload-service:**
 ```powershell
-cd C:\path\to\MediaMind\upload-service
+cd C:\path\to\MediaSense\upload-service
 mvn spring-boot:run
 ```
 
 **conversion-service** (no overrides needed if ffmpeg/temp paths match SETUP.md exactly):
 ```powershell
-cd C:\path\to\MediaMind\conversion-service
+cd C:\path\to\MediaSense\conversion-service
 mvn spring-boot:run
 ```
 If your ffmpeg/whisper install lives elsewhere, override instead:
 ```powershell
-mvn spring-boot:run "-Dspring-boot.run.arguments=--ffmpeg.path=D:/tools/ffmpeg/bin --convert.temp.path=D:/tmp/mediamind --whisper.path=D:/Python312/Scripts/whisper.exe"
+mvn spring-boot:run "-Dspring-boot.run.arguments=--ffmpeg.path=D:/tools/ffmpeg/bin --convert.temp.path=D:/tmp/mediasense --whisper.path=D:/Python312/Scripts/whisper.exe"
 ```
 
 **download-service:**
 ```powershell
-cd C:\path\to\MediaMind\download-service
+cd C:\path\to\MediaSense\download-service
 mvn spring-boot:run
 ```
 
 **qna-service** (no overrides needed if paths match SETUP.md exactly):
 ```powershell
-cd C:\path\to\MediaMind\qna-service
+cd C:\path\to\MediaSense\qna-service
 mvn spring-boot:run
 ```
 Override example if installed elsewhere:
 ```powershell
-mvn spring-boot:run "-Dspring-boot.run.arguments=--ffmpeg.path=D:/tools/ffmpeg/bin --qna.temp.path=D:/tmp/mediamind --whisper.path=D:/Python312/Scripts/whisper.exe --yt-dlp.path=D:/Python312/Scripts/yt-dlp.exe"
+mvn spring-boot:run "-Dspring-boot.run.arguments=--ffmpeg.path=D:/tools/ffmpeg/bin --qna.temp.path=D:/tmp/mediasense --whisper.path=D:/Python312/Scripts/whisper.exe --yt-dlp.path=D:/Python312/Scripts/yt-dlp.exe"
 ```
 
 Confirm each is up (run in any PowerShell window, `curl.exe` ships with Windows 10/11):
@@ -56,7 +56,7 @@ curl.exe -s -o NUL -w "qna:%{http_code}`n"        http://localhost:8083/qna/cont
 ## 2. Run the frontend
 
 ```powershell
-cd C:\path\to\MediaMind\frontend
+cd C:\path\to\MediaSense\frontend
 npm install
 npm run dev
 ```

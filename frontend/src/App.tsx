@@ -30,7 +30,7 @@ export default function App() {
             {/* Sidebar */}
             <aside className="sidebar">
                 <div className="sidebar-logo">
-                    <h1>MediaMind</h1>
+                    <h1>MediaSense</h1>
                     <span>Media Processing Platform</span>
                 </div>
                 <nav className="sidebar-nav">

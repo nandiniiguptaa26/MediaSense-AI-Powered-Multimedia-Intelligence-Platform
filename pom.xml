@@ -8,12 +8,12 @@
 		<version>3.5.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.mediamind</groupId>
-	<artifactId>mediamind</artifactId>
+	<groupId>com.mediasense</groupId>
+	<artifactId>mediasense</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging> <!-- Required for multi-module parent -->
-	<name>mediamind</name>
-	<description>MediaMind</description>
+	<name>mediasense</name>
+	<description>MediaSense</description>
 	<modules>
 		<module>upload-service</module>
 		<module>conversion-service</module>

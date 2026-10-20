@@ -1,9 +1,9 @@
-# MediaMind — Setup Guide (Windows)
+# MediaSense — Setup Guide (Windows)
 
 One-time environment setup: install tools, prepare local folders/buckets, and build the
 project. Once this is done, see **RUN.md** to start and use the services.
 
-MediaMind is a media conversion / transcription / Q&A platform built as a Maven multi-module
+MediaSense is a media conversion / transcription / Q&A platform built as a Maven multi-module
 project of independent Spring Boot 3.5 microservices, backed by Kafka + MinIO, with a
 Vite/React frontend. This guide targets **Windows 10/11**, which is also the OS this codebase
 was originally written for — the default config paths already assume Windows layouts.
@@ -114,7 +114,7 @@ separate `ollama serve` needed.)
 ## 5. Build the project
 
 ```powershell
-cd C:\path\to\MediaMind
+cd C:\path\to\MediaSense
 mvn clean install
 ```
 
@@ -126,7 +126,7 @@ that depend on it, regardless of `<modules>` listing order in the parent `pom.xm
 Make sure Docker Desktop is running, then from the project root:
 
 ```powershell
-cd C:\path\to\MediaMind
+cd C:\path\to\MediaSense
 docker compose up -d
 ```
 
